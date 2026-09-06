@@ -1,9 +1,9 @@
-# tinywasm/user Skill
+# webtyp/user Skill
 
 ## Description
 
-`tinywasm/user` is the stable identity value shared by `tinywasm/auth` and
-`tinywasm/rbac`. It contains no router, no persistence, and no policy.
+`webtyp/user` is the stable identity value shared by `webtyp/auth` and
+`webtyp/rbac`. It contains no router, no persistence, and no policy.
 
 ## Core Concepts
 
@@ -33,9 +33,9 @@ type Subject struct {
 
 ```go
 import (
-    "github.com/tinywasm/user"
-    "github.com/tinywasm/auth/authority"
-    "github.com/tinywasm/rbac"
+    "webtyp.com/user"
+    "webtyp.com/auth/authority"
+    "webtyp.com/rbac"
 )
 
  // auth resolves a Subject

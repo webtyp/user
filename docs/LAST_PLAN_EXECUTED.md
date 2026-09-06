@@ -10,14 +10,14 @@ REVIEWER: none
 
 ## Goal
 
-Turn `github.com/tinywasm/user` into the stable, lightweight identity contract
+Turn `webtyp.com/user` into the stable, lightweight identity contract
 that downstream libraries can depend on without inheriting OAuth providers,
 session implementations, persistence, or RBAC. Create exactly two sibling
-libraries, both owned by `tinywasm`:
+libraries, both owned by `webtyp`:
 
-1. `github.com/tinywasm/auth` owns authentication, sessions, credential modes,
+1. `webtyp.com/auth` owns authentication, sessions, credential modes,
    OAuth2 flow, and concrete OAuth providers.
-2. `github.com/tinywasm/rbac` owns roles, permissions, role assignment,
+2. `webtyp.com/rbac` owns roles, permissions, role assignment,
    authorization, and its persistence.
 
 The local development path must not require any Google secret. It must present
@@ -26,15 +26,15 @@ normal local session for the selected identity. Production continues to use the
 real Google OAuth provider unchanged.
 
 This is a breaking migration. Do not retain forwarding packages or type aliases
-under `tinywasm/user`: those would keep its dependency graph and release cadence
+under `webtyp/user`: those would keep its dependency graph and release cadence
 coupled to the code being extracted.
 
 ## Development Rules
 
 - Documentation and plan text are English. Source identifiers and error messages
   are English.
-- This is TinyWasm code: no Go standard-library dependency in code reachable
-  from WASM/TinyGo. Use `github.com/tinywasm/fmt`; do not introduce `map`,
+- This is WebTyp code: no Go standard-library dependency in code reachable
+  from WASM/TinyGo. Use `webtyp.com/fmt`; do not introduce `map`,
   `reflect`, `syscall/js`, `defer`, or `recover` in WASM-shared code.
 - Use slices plus linear search for the small provider, role, and scenario sets.
 - Preserve narrow dependency injection ports. A package may receive an interface
@@ -56,17 +56,17 @@ coupled to the code being extracted.
 ## Final Ownership and Dependency Direction
 
 ```
-tinywasm/user              stable values and ports only
+webtyp/user              stable values and ports only
       ▲             ▲
       │             │
-tinywasm/auth      tinywasm/rbac
+webtyp/auth      webtyp/rbac
       ▲             ▲
       └──── application composition root ────┘
 ```
 
 Rules of the final graph:
 
-- `user` depends only on the minimal shared TinyWasm value/transport packages
+- `user` depends only on the minimal shared WebTyp value/transport packages
   needed by its exported contracts. It imports neither `auth`, `rbac`, `orm`,
   `fetch`, `jwt`, nor a concrete provider.
 - `auth` imports `user`, and may depend on its own persistence/runtime
@@ -76,10 +76,10 @@ Rules of the final graph:
 - The application composition root is the only place allowed to import both
   `auth` and `rbac`. It wires the narrow ports between them.
 - There are no compatibility packages at
-  `github.com/tinywasm/user/{authority,oauth2,email_password,trusted_ip,session}`
+  `webtyp.com/user/{authority,oauth2,email_password,trusted_ip,session}`
   after the final `user` release.
 
-### `tinywasm/user`: exact retained public contract
+### `webtyp/user`: exact retained public contract
 
 The final root has exactly these domain values; it must not become a service or
 an adapter package:
@@ -100,7 +100,7 @@ owns resolving and creating `Subject`; `rbac` stores and evaluates assignments
 by `SubjectID`; applications may display a `Subject` returned by `auth`.
 
 The root may additionally contain value-only encoding helpers required to pass
-`Subject` across the existing TinyWasm typed transport. It contains no router
+`Subject` across the existing WebTyp typed transport. It contains no router
 route, authentication interface, session interface, OAuth type, persistence
 port, error value, model definition, CRUD presenter, event topic, or policy.
 All of those have a single owner in `auth` or `rbac`.
@@ -148,14 +148,14 @@ may silently select it.
 
 ## Stage 0 — Write durable design records before implementation
 
-1. In `tinywasm/user`, replace the current architecture section that calls the
+1. In `webtyp/user`, replace the current architecture section that calls the
    root package "models, contracts, ports, view, consts" with the target
    three-library graph and its one-way dependency rules.
-2. Add a permanent design document in `tinywasm/user/docs/` that records the
+2. Add a permanent design document in `webtyp/user/docs/` that records the
    rejected alternatives: keeping subpackages in `user`, forwarding aliases,
    and a fake Google OAuth server. Explain why the direct local authenticator is
    the chosen test seam.
-3. Update `tinywasm/user/README.md` to describe the future root contract and
+3. Update `webtyp/user/README.md` to describe the future root contract and
    link the permanent design document. Do not link this plan.
 4. Every new sibling repository must receive equivalent permanent
    `ARCHITECTURE.md`, `README.md`, and a dependency-direction diagram before
@@ -170,12 +170,12 @@ Acceptance:
 
 ## Stage 1 — Create the two modules and their self-contained plans (gate)
 
-From the TinyWasm projects directory, create the repositories with the official
+From the WebTyp projects directory, create the repositories with the official
 scaffolder:
 
 ```text
-gonew auth "TinyWasm authentication mechanisms and session runtime" -owner=tinywasm
-gonew rbac "TinyWasm role-based authorization runtime" -owner=tinywasm
+gonew auth "WebTyp authentication mechanisms and session runtime" -owner=webtyp
+gonew rbac "WebTyp role-based authorization runtime" -owner=webtyp
 ```
 
 Do not hand-create directories, `go.mod`, repository metadata, or initial tags.
@@ -222,11 +222,11 @@ wait for the executor to infer any boundary from the old `user` code.
 
 Acceptance:
 
-- both repositories are created by `gonew` with `tinywasm` as owner;
+- both repositories are created by `gonew` with `webtyp` as owner;
 - both plans are self-contained and name exact old `user` source files to move;
 - neither new module imports the other in its initial dependency graph.
 
-## Stage 2 — Publish the minimal `tinywasm/user` contract (gate)
+## Stage 2 — Publish the minimal `webtyp/user` contract (gate)
 
 First add `SubjectID` and `Subject` to the root package and publish a contract
 release that both new libraries can import. The old packages and models remain
@@ -245,7 +245,7 @@ Acceptance:
 - every legacy package is explicitly listed as temporary in the migration
   documentation, with no forwarding package promised after Stage 5.
 
-## Stage 3 — Implement and publish `tinywasm/auth` (gate)
+## Stage 3 — Implement and publish `webtyp/auth` (gate)
 
 Execute only `auth/docs/PLAN.md` until its acceptance criteria are green and the
 module is published. Its tests must include:
@@ -261,7 +261,7 @@ The local simulator must be usable by an app with no
 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, or `GOOGLE_REDIRECT_URL` in its
 process environment.
 
-## Stage 4 — Implement and publish `tinywasm/rbac`
+## Stage 4 — Implement and publish `webtyp/rbac`
 
 Execute `rbac/docs/PLAN.md` after the `user.SubjectID` contract is published.
 It may execute in parallel with the internal implementation of `auth`, but both
@@ -309,14 +309,14 @@ removing legacy `user` packages. Do not add `replace` directives to production
 
 ### Other known consumers
 
-Migrate `tinywasm/layout/platformd` and `veltylabs/mjosefa-cms` in the same
+Migrate `webtyp/layout/platformd` and `veltylabs/mjosefa-cms` in the same
 wave. First inventory their imported `user` exports and assign each to `user`,
 `auth`, or `rbac`; do not mechanically rename imports. Each consumer gets its
 own self-contained plan before code changes.
 
-## Stage 6 — Reduce and publish `tinywasm/user` last among the foundation modules
+## Stage 6 — Reduce and publish `webtyp/user` last among the foundation modules
 
-After every consumer has migrated, remove the old code from `tinywasm/user` in
+After every consumer has migrated, remove the old code from `webtyp/user` in
 one breaking release:
 
 1. Move each source file to the owner named in Stages 1–3; preserve history with
@@ -337,7 +337,7 @@ Acceptance:
 - `find . -type d` shows none of `authority`, `oauth2`, `email_password`,
   `trusted_ip`, or `session` beneath the `user` module;
 - `go mod graph` for `user` contains no `orm`, `fetch`, or `jwt` dependency;
-- `grep -R "github.com/tinywasm/user/authority\|github.com/tinywasm/user/oauth2\|github.com/tinywasm/user/session\|github.com/tinywasm/user/email_password\|github.com/tinywasm/user/trusted_ip" .`
+- `grep -R "webtyp.com/user/authority\|webtyp.com/user/oauth2\|webtyp.com/user/session\|webtyp.com/user/email_password\|webtyp.com/user/trusted_ip" .`
   returns no production import;
 
 - `gotest` and the TinyGo/WASM check pass in all three foundation modules;
@@ -352,7 +352,7 @@ Acceptance:
    `auth` and `rbac` may be planned in parallel after the contract release.
 2. For every release, run its documented `gotest` suite and TinyGo/WASM check
    before publishing.
-3. In `misitio`, use the TinyWasm MCP after migration: verify `CLIENT` and
+3. In `misitio`, use the WebTyp MCP after migration: verify `CLIENT` and
    `SERVER` build logs, navigate to the local selector, choose both scenarios,
    inspect the session-protected routes, and confirm browser console/errors are
    clean.
@@ -364,15 +364,15 @@ Acceptance:
 
 | Order | Repository | Work | Gate |
 |---:|---|---|---|
-| 0 | `tinywasm/user` | Permanent design records and this plan | Required before code |
-| 1 | `tinywasm/auth` + `tinywasm/rbac` | Create with `gonew` and write self-contained plans | Blocks source migration |
-| 2 | `tinywasm/user` | Publish `SubjectID`/`Subject` contract; retain legacy temporarily | Blocks 3–4 |
-| 3 | `tinywasm/auth` | Auth/session/providers/local selector | Blocks consumer migration |
-| 4 | `tinywasm/rbac` | Roles/permissions/authorizer | Blocks consumer migration |
+| 0 | `webtyp/user` | Permanent design records and this plan | Required before code |
+| 1 | `webtyp/auth` + `webtyp/rbac` | Create with `gonew` and write self-contained plans | Blocks source migration |
+| 2 | `webtyp/user` | Publish `SubjectID`/`Subject` contract; retain legacy temporarily | Blocks 3–4 |
+| 3 | `webtyp/auth` | Auth/session/providers/local selector | Blocks consumer migration |
+| 4 | `webtyp/rbac` | Roles/permissions/authorizer | Blocks consumer migration |
 | 5 | `veltylabs/misitio` | Explicit local simulator vs production Google composition | Waits for 2–4 |
 | 6 | Other consumers | `layout/platformd`, `mjosefa-cms`, then discovered consumers | One plan per repository |
-| 7 | `tinywasm/user` | Remove legacy behavior and publish lean root | Waits for 5–6 |
-| 8 | `tinywasm/auth` + `tinywasm/rbac` | Pin final minimal `user` release and republish | Verifies final graph |
+| 7 | `webtyp/user` | Remove legacy behavior and publish lean root | Waits for 5–6 |
+| 8 | `webtyp/auth` + `webtyp/rbac` | Pin final minimal `user` release and republish | Verifies final graph |
 
 ## Non-Goals
 
@@ -381,6 +381,6 @@ Acceptance:
   weaken production OAuth state validation.
 - Do not auto-enable local authentication based on a missing secret, a hostname,
   or a build failure.
-- Do not keep compatibility wrappers in `tinywasm/user`.
+- Do not keep compatibility wrappers in `webtyp/user`.
 - Do not change application-specific role policy while extracting the framework;
   only move its mechanism and preserve behavior.

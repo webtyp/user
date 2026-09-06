@@ -1,6 +1,6 @@
 # Architecture
 
-`tinywasm/user` is the stable, lightweight identity contract for the TinyWasm
+`webtyp/user` is the stable, lightweight identity contract for the WebTyp
 ecosystem. It contains only value types needed to pass an authenticated identity
 across transport boundaries. Authentication, sessions, OAuth providers, and
 authorization live in sibling libraries.
@@ -9,15 +9,15 @@ authorization live in sibling libraries.
 
 ```mermaid
 flowchart TD
-    U[github.com/tinywasm/user<br/>stable Subject values only] --> A[github.com/tinywasm/auth<br/>authentication + sessions]
-    U --> R[github.com/tinywasm/rbac<br/>roles + permissions]
+    U[webtyp.com/user<br/>stable Subject values only] --> A[webtyp.com/auth<br/>authentication + sessions]
+    U --> R[webtyp.com/rbac<br/>roles + permissions]
     A --> C[application composition root]
     R --> C
 ```
 
 One-way rules:
 
-- `user` depends only on the minimal shared TinyWasm value packages required to
+- `user` depends only on the minimal shared WebTyp value packages required to
   transport `Subject`. It imports neither `auth`, `rbac`, `orm`, `fetch`, `jwt`,
   nor any concrete provider.
 - `auth` imports `user` and may depend on its own persistence/runtime
@@ -27,7 +27,7 @@ One-way rules:
 - Only the application composition root imports both `auth` and `rbac`. It wires
   the narrow ports between them.
 - No compatibility packages remain at
-  `github.com/tinywasm/user/{authority,oauth2,email_password,trusted_ip,session}`.
+  `webtyp.com/user/{authority,oauth2,email_password,trusted_ip,session}`.
 
 ## Retained Public Contract
 
@@ -50,14 +50,14 @@ type Subject struct {
 assignments by `SubjectID`; applications display a `Subject` returned by `auth`.
 
 The root may contain value-only encoding helpers required to pass `Subject`
-across the TinyWasm typed transport. It contains no router route,
+across the WebTyp typed transport. It contains no router route,
 authentication interface, session interface, OAuth type, persistence port, error
 value, model definition, CRUD presenter, event topic, or policy.
 
 ## Design Principles
 
 - **WASM-safe**: no Go standard-library dependency in code reachable from
-  WASM/TinyGo. Uses `github.com/tinywasm/fmt` where needed.
+  WASM/TinyGo. Uses `webtyp.com/fmt` where needed.
 - **Typed and explicit**: subject identity has one representation.
 - **Narrow ports**: sibling libraries receive interfaces they need, never a
   concrete sibling module or database handle merely to reach another service.

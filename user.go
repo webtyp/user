@@ -1,7 +1,7 @@
-// Package user defines the stable identity value shared by TinyWasm libraries.
+// Package user defines the stable identity value shared by WebTyp libraries.
 package user
 
-import "github.com/tinywasm/model"
+import "webtyp.com/model"
 
 // SubjectID identifies a person independently of authentication and policy.
 type SubjectID string

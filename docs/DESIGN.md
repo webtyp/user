@@ -2,13 +2,13 @@
 
 ## Goal
 
-Turn `github.com/tinywasm/user` into the stable, lightweight identity contract
+Turn `webtyp.com/user` into the stable, lightweight identity contract
 that downstream libraries can depend on without inheriting OAuth providers,
 session implementations, persistence, or RBAC. Create two sibling libraries:
 
-- `github.com/tinywasm/auth` — authentication, sessions, credential modes,
+- `webtyp.com/auth` — authentication, sessions, credential modes,
   OAuth2 flow, and concrete providers.
-- `github.com/tinywasm/rbac` — roles, permissions, assignments, and
+- `webtyp.com/rbac` — roles, permissions, assignments, and
   authorization.
 
 The local development path must not require any Google secret. It must present

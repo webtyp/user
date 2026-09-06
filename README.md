@@ -1,17 +1,17 @@
-# tinywasm/user
+# webtyp/user
 <img src="docs/img/badges.svg">
 
-Stable identity value contract for the TinyWasm ecosystem. Authentication,
+Stable identity value contract for the WebTyp ecosystem. Authentication,
 sessions, concrete providers, and authorization live in sibling libraries
-`github.com/tinywasm/auth` and `github.com/tinywasm/rbac`.
+`webtyp.com/auth` and `webtyp.com/rbac`.
 
 ## Package Structure
 
 | Package | Purpose |
 |---|---|
-| `github.com/tinywasm/user` | WASM-safe root package defining `SubjectID` and `Subject` |
-| `github.com/tinywasm/auth` | Authentication, sessions, credential modes, OAuth2, providers, `auth/local` |
-| `github.com/tinywasm/rbac` | Roles, permissions, assignments, `Can` |
+| `webtyp.com/user` | WASM-safe root package defining `SubjectID` and `Subject` |
+| `webtyp.com/auth` | Authentication, sessions, credential modes, OAuth2, providers, `auth/local` |
+| `webtyp.com/rbac` | Roles, permissions, assignments, `Can` |
 
 Dependency direction: `auth` and `rbac` import `user`; neither imports the
 other. Only the application composition root imports both.
@@ -34,14 +34,14 @@ flowchart TD
 
 ```go
 import (
-    "github.com/tinywasm/user"
-    "github.com/tinywasm/auth/authority"
-    "github.com/tinywasm/auth/oauth2"
-    "github.com/tinywasm/auth/oauth2/provider/google"
-    "github.com/tinywasm/rbac"
-    "github.com/tinywasm/orm"
-    "github.com/tinywasm/sqlite"
-    "github.com/tinywasm/unixid"
+    "webtyp.com/user"
+    "webtyp.com/auth/authority"
+    "webtyp.com/auth/oauth2"
+    "webtyp.com/auth/oauth2/provider/google"
+    "webtyp.com/rbac"
+    "webtyp.com/orm"
+    "webtyp.com/sqlite"
+    "webtyp.com/unixid"
 )
 
 ids, _ := unixid.NewUnixID()
@@ -67,7 +67,7 @@ rb, _ := rbac.New(db)
 
 Local development: build a `local` authenticator with explicit scenarios and
 mount it in the development composition root. Production builds use only the
-Google provider and never register `local`. See `github.com/tinywasm/auth/local`.
+Google provider and never register `local`. See `webtyp.com/auth/local`.
 
 ## Status
 

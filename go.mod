@@ -1,7 +1,7 @@
-module github.com/tinywasm/user
+module webtyp.com/user
 
 go 1.25.2
 
-require github.com/tinywasm/model v0.1.6
+require webtyp.com/model v0.1.6
 
-require github.com/tinywasm/fmt v0.25.7 // indirect
+require webtyp.com/fmt v0.25.7 // indirect
